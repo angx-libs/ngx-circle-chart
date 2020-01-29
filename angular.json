@@ -143,6 +143,41 @@
           }
         }
       }
+    },
+    "@angx/ngx-circle-chart": {
+      "projectType": "library",
+      "root": "projects/angx/ngx-circle-chart",
+      "sourceRoot": "projects/angx/ngx-circle-chart/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/angx/ngx-circle-chart/tsconfig.lib.json",
+            "project": "projects/angx/ngx-circle-chart/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/angx/ngx-circle-chart/src/test.ts",
+            "tsConfig": "projects/angx/ngx-circle-chart/tsconfig.spec.json",
+            "karmaConfig": "projects/angx/ngx-circle-chart/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/angx/ngx-circle-chart/tsconfig.lib.json",
+              "projects/angx/ngx-circle-chart/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }},
   "defaultProject": "ngx-circle-chart"
 }

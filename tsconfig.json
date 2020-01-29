@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@angx/ngx-circle-chart": [
+        "dist/angx/ngx-circle-chart"
+      ],
+      "@angx/ngx-circle-chart/*": [
+        "dist/angx/ngx-circle-chart/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

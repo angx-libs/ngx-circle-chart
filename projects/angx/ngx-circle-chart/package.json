@@ -1,0 +1,23 @@
+{
+  "name": "@angx/ngx-circle-chart",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14"
+  },
+  "bundledDependencies": [
+    "chart.js",
+    "ng2-charts"
+  ],
+  "keywords": [
+    "circle graph",
+    "ngx circle graph",
+    "circle chart",
+    "ngx chart",
+    "ngx circle chart"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asingh0601/circle-graph.git"
+  }
+}
