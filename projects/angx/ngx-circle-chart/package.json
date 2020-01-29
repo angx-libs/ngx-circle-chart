@@ -10,14 +10,14 @@
     "ng2-charts"
   ],
   "keywords": [
+    "ngx chart",
+    "ngx circle chart",
     "circle graph",
     "ngx circle graph",
-    "circle chart",
-    "ngx chart",
-    "ngx circle chart"
+    "circle chart"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/asingh0601/circle-graph.git"
+    "url": "https://github.com/angx-libs/ngx-circle-chart.git"
   }
 }
