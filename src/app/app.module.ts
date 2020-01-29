@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgxCircleChartModule } from 'projects/angx/ngx-circle-chart/src/lib/ngx-circle-chart.module';
+import { NgxCircleChartModule } from 'projects/angx/ngx-circle-chart/src/public-api';
 import { AppComponent } from './app.component';
 
 @NgModule({
