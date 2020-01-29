@@ -1,6 +1,6 @@
 # @angx/ngx-circle-chart
 
-![Ngx Circle Chart](https://raw.githubusercontent.com/ngx-libs/ngx-circle-chart/master/src/assets/screenshot.png)
+![Ngx Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.PNG)
 
 Beautiful Circle Chart for Angular!
 
