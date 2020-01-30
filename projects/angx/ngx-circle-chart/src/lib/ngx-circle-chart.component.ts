@@ -149,6 +149,9 @@ export class NgxCircleChartComponent implements OnInit {
   }
 
   applyGradient() {
+    try {
+      this.chart.nativeElement.style.height = this.chartcanvas.nativeElement.offsetHeight + 5 + 'px';
+    } catch (e) { }
     if (this.gradientColoring) {
       const ctx = this.chartfgcanvas.nativeElement.getContext('2d');
       const percent = this.value / this.maxValue;
