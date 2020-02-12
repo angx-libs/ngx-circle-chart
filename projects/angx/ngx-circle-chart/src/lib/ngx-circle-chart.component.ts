@@ -21,9 +21,9 @@ import { CircleInnerText } from './CircleInnerText';
 export class NgxCircleChartComponent implements OnInit {
 
   readonly chartType: ChartType = 'doughnut';
-  @ViewChild('chartwrapper', { static: false }) chart: ElementRef;
-  @ViewChild('chartcanvas', { static: false }) chartcanvas: ElementRef;
-  @ViewChild('chartfgcanvas', { static: false }) chartfgcanvas: ElementRef;
+  @ViewChild('chartwrapper') chart: ElementRef;
+  @ViewChild('chartcanvas') chartcanvas: ElementRef;
+  @ViewChild('chartfgcanvas') chartfgcanvas: ElementRef;
 
   @Input() value: number;
   @Input() maxValue: number;

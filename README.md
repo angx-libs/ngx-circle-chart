@@ -4,7 +4,7 @@
 
 Beautiful Circle Chart for Angular!
 
-@angx/ngx-circle-chart has been developed out of chart.js and ng2-charts.
+@angx/ngx-circle-chart has been developed out of [chart.js](https://www.npmjs.com/package/chart.js) and [ng2-charts](https://www.npmjs.com/package/ng2-charts).
 
 ### Customization
 
