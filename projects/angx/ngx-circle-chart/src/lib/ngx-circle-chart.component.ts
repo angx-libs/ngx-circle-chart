@@ -142,58 +142,63 @@ export class NgxCircleChartComponent implements OnInit {
       ];
       this.enableFg = true;
       setTimeout(() => {
-        this.applyGradient();
+        if (this.gradientColoring) {
+          this.applyGradient();
+        }
+        try {
+          this.chart.nativeElement.style.height = this.chartcanvas.nativeElement.offsetHeight + 5 + 'px';
+        } catch (e) { }
         this.showGraph = true;
       }, 1000);
     }, 100);
   }
 
   applyGradient() {
-    try {
-      this.chart.nativeElement.style.height = this.chartcanvas.nativeElement.offsetHeight + 5 + 'px';
-    } catch (e) { }
-    if (this.gradientColoring) {
-      const ctx = this.chartfgcanvas.nativeElement.getContext('2d');
-      const percent = this.value / this.maxValue;
-      if (percent > 0.5 && percent <= 0.75) {
-        const gradient = ctx.createLinearGradient(0
-          , this.chartfgcanvas.nativeElement.offsetHeight / 6, 0, this.chartfgcanvas.nativeElement.offsetHeight * 0.9);
-        gradient.addColorStop(0, this.color);
-        gradient.addColorStop(1, this.bgColor);
-        this.bgChartColors = [
-          {
-            backgroundColor: [gradient, 'transparent'],
-            borderColor: [gradient, 'transparent'],
-            pointBackgroundColor: [gradient, 'transparent'],
-            pointBorderColor: [gradient, 'transparent'],
-            pointHoverBackgroundColor: [gradient, 'transparent'],
-            pointHoverBorderColor: [gradient, 'transparent']
-          }
-        ];
-      } else if (percent > 0.75) {
-        const gradient = ctx.createLinearGradient(this.chartfgcanvas.nativeElement.offsetWidth / 40,
-          0, this.chartfgcanvas.nativeElement.offsetWidth / 6,
-          this.chartfgcanvas.nativeElement.offsetHeight / 2);
-        gradient.addColorStop(0.85, this.bgColor);
-        gradient.addColorStop(1, this.color);
-        this.bgChartColors = [
-          {
-            backgroundColor: [gradient, 'transparent'],
-            borderColor: [gradient, 'transparent'],
-            pointBackgroundColor: [gradient, 'transparent'],
-            pointBorderColor: [gradient, 'transparent'],
-            pointHoverBackgroundColor: [gradient, 'transparent'],
-            pointHoverBorderColor: [gradient, 'transparent']
-          }
-        ];
-      }
+    const ctx = this.chartfgcanvas.nativeElement.getContext('2d');
+    const percent = this.value / this.maxValue;
+    if (percent > 0.5 && percent <= 0.75) {
+      const gradient = ctx.createLinearGradient(0
+        , this.chartfgcanvas.nativeElement.offsetHeight / 6, 0, this.chartfgcanvas.nativeElement.offsetHeight * 0.9);
+      gradient.addColorStop(0, this.color);
+      gradient.addColorStop(1, this.bgColor);
+      this.bgChartColors = [
+        {
+          backgroundColor: [gradient, 'transparent'],
+          borderColor: [gradient, 'transparent'],
+          pointBackgroundColor: [gradient, 'transparent'],
+          pointBorderColor: [gradient, 'transparent'],
+          pointHoverBackgroundColor: [gradient, 'transparent'],
+          pointHoverBorderColor: [gradient, 'transparent']
+        }
+      ];
+    } else if (percent > 0.75) {
+      const gradient = ctx.createLinearGradient(this.chartfgcanvas.nativeElement.offsetWidth / 40,
+        0, this.chartfgcanvas.nativeElement.offsetWidth / 6,
+        this.chartfgcanvas.nativeElement.offsetHeight / 2);
+      gradient.addColorStop(0.85, this.bgColor);
+      gradient.addColorStop(1, this.color);
+      this.bgChartColors = [
+        {
+          backgroundColor: [gradient, 'transparent'],
+          borderColor: [gradient, 'transparent'],
+          pointBackgroundColor: [gradient, 'transparent'],
+          pointBorderColor: [gradient, 'transparent'],
+          pointHoverBackgroundColor: [gradient, 'transparent'],
+          pointHoverBorderColor: [gradient, 'transparent']
+        }
+      ];
     }
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     setTimeout(() => {
-      this.applyGradient();
+      try {
+        this.chart.nativeElement.style.height = this.chartcanvas.nativeElement.offsetHeight + 5 + 'px';
+      } catch (e) { }
+      if (this.gradientColoring) {
+        this.applyGradient();
+      }
     }, 100);
   }
 
