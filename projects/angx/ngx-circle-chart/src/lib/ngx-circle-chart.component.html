@@ -1,8 +1,9 @@
-<div id="chart-wrapper" #chartwrapper>
+<div [id]="id" class="chart-wrapper" #chartwrapper>
     <div *ngIf="enableGraph" [style.visibility]="showGraph ? 'visible' : 'hidden'">
         <canvas #chartcanvas id="chart" baseChart [data]="chartData" [chartType]="chartType" [colors]="chartColors"
-            [options]="chartOptions"></canvas>
+            [options]="chartOptions" [plugins]="[myChartJSPlugin]"></canvas>
         <canvas *ngIf="enableFg" #chartfgcanvas id="chart-foreground" baseChart [data]="bgChartData"
-            [chartType]="chartType" [colors]="bgChartColors" [options]="bgChartOptions"></canvas>
+            [chartType]="chartType" [colors]="bgChartColors" [options]="bgChartOptions"
+            [plugins]="[myChartJSPlugin]"></canvas>
     </div>
 </div>

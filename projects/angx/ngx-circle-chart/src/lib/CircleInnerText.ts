@@ -1,7 +1,7 @@
 import { Chart } from 'chart.js';
 
 export class CircleInnerText {
-    private drawCircleLabel(chart: any, options: any) {
+    public drawCircleLabel(chart: any, options: any) {
         const helpers = Chart.helpers;
         const utils = {
             parseFont: (value: any) => {
@@ -55,9 +55,8 @@ export class CircleInnerText {
             }
 
         };
-        if (options && options.labels && options.labels.length > 0) {
+        if (options?.labels?.length > 0) {
             const ctx = chart.ctx;
-            const chartWrapper = document.getElementById('chart-wrapper');
             const resolve = helpers.options.resolve;
 
             const innerLabels = [];
@@ -93,16 +92,13 @@ export class CircleInnerText {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = innerLabels[0].color;
             ctx.font = innerLabels[0].font.string;
-            // ctx.fillText(innerLabels[0].text, ctx.canvas.width / 2 - textAreaSize.width / 2, ctx.canvas.height / 2);
-            ctx.fillText(innerLabels[0].text, chartWrapper.offsetWidth / 2 - textAreaSize.width / 2, chartWrapper.offsetHeight / 2);
-
-
-            ctx.fillStyle = this.lightenDarkenColor(innerLabels[1].color, -30);
-            ctx.font = innerLabels[1].font.string;
-            // ctx.fillText(innerLabels[1].text, ctx.canvas.width / 2 + textAreaSize.width / 2,
-            //     ctx.canvas.height / 2 + textAreaSize.height * 0.1);
-            ctx.fillText(innerLabels[1].text, chartWrapper.offsetWidth / 2 + textAreaSize.width / 2,
-                chartWrapper.offsetHeight / 2 + textAreaSize.height * 0.1);
+            const elem = document.getElementById(chart?.id);
+            if (elem) {
+                ctx.fillText(innerLabels[0].text, elem.offsetWidth / 2 - textAreaSize.width / 2, elem.offsetHeight / 2);
+                ctx.fillStyle = this.lightenDarkenColor(innerLabels[1].color, -30);
+                ctx.font = innerLabels[1].font.string;
+                ctx.fillText(innerLabels[1].text, elem.offsetWidth / 2 + textAreaSize.width / 2, elem.offsetHeight / 2 + textAreaSize.height * 0.1);
+            }
         }
     }
 
@@ -145,15 +141,6 @@ export class CircleInnerText {
 
         // tslint:disable-next-line:no-bitwise
         return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16);
-    }
-
-    public register() {
-        Chart.plugins.register({
-            id: 'doughnutlabel',
-            beforeDatasetDraw: (chart, args, options) => {
-                this.drawCircleLabel(chart, options);
-            }
-        });
     }
 }
 

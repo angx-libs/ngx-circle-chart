@@ -4,10 +4,11 @@ import { Colors } from 'ng2-charts';
 import { CircleInnerText } from './CircleInnerText';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'circle-chart',
   templateUrl: './ngx-circle-chart.component.html',
   styles: [`
-  #chart-wrapper {
+  .chart-wrapper {
     display: block;
     width:150%;
     margin-left: -25%;
@@ -42,9 +43,37 @@ export class NgxCircleChartComponent implements OnInit {
   enableGraph: boolean;
   enableFg: boolean;
   showGraph: boolean;
-
+  myChartJSPlugin: any;
+  id: number;
   constructor() {
-    new CircleInnerText().register();
+    this.myChartJSPlugin = {
+      beforeDatasetsDraw: chartInstance => {
+        chartInstance.options.labels = [
+          {
+            text: this.value,
+            font: {
+              size: '120',
+              units: 'em',
+              family: 'Rubik',
+              weight: '500'
+            },
+            color: this.color
+          },
+          {
+            text: '/' + this.maxValue,
+            font: {
+              size: '85',
+              units: 'em',
+              family: 'Rubik',
+              weight: '300'
+            },
+            color: this.bgColor
+          }
+        ];
+        this.id = chartInstance.id;
+        new CircleInnerText().drawCircleLabel(chartInstance, chartInstance.options);
+      }
+    };
   }
 
   ngOnInit() {
@@ -102,32 +131,6 @@ export class NgxCircleChartComponent implements OnInit {
         },
         tooltips: {
           enabled: false
-        },
-        plugins: {
-          doughnutlabel: {
-            labels: [
-              {
-                text: this.value,
-                font: {
-                  size: '120',
-                  units: 'em',
-                  family: 'Rubik',
-                  weight: '500'
-                },
-                color: this.color
-              },
-              {
-                text: '/' + this.maxValue,
-                font: {
-                  size: '85',
-                  units: 'em',
-                  family: 'Rubik',
-                  weight: '300'
-                },
-                color: this.bgColor
-              }
-            ]
-          }
         }
       };
       this.bgChartColors = [
