@@ -1,27 +1,45 @@
-# NgxCircleChart
+# @angx/ngx-circle-chart
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.1.
+![Angular Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.png)!
 
-## Development server
+Beautiful Circle Chart for Angular (Now supports Angular 18)!
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+@angx/ngx-circle-chart has been developed out of [chart.js](https://www.npmjs.com/package/chart.js) and [ng2-charts](https://www.npmjs.com/package/ng2-charts).
 
-## Code scaffolding
+## Features ##
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Customization
+- Autoscaling
+- Responsive
+- Easily Customizable Colors
+- Gradient Coloring
+- Supports Angular 18
 
-## Build
+## Install ##
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+To use @angx/ngx-circle-chart in your project install it via [npm](https://www.npmjs.com/package/@angx/ngx-circle-chart):
 
-## Running unit tests
+```
+npm i @angx/ngx-circle-chart --save
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Usage ##
 
-## Running end-to-end tests
+STRING_INITIALIZER is the action (login, register, enquiryform etc.) that is protected by the captcha service. See [Example](https://github.com/angx-libs/ngx-circle-chart/tree/master/src/app/google-recaptcha-example)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
+<circle-chart [value]="6" [maxValue]="8" [color]="'#FF4040'" [bgColor]="'#FADADA'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
+```
 
-## Further help
+## Support ##
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+If you like my work and feel like buying me a coffee, please feel free to do so: 
+
+[Buy Me A Coffee](https://buymeacoffee.com/er.abhishek)
+
+## Credits ##
+
+Abhishek Singh 
+
+[Github](https://github.com/asingh0601)
+[Twitter](https://twitter.com/only_abhishek)
