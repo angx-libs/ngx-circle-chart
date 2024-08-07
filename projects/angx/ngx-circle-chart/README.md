@@ -1,24 +1,45 @@
-# NgxCircleChart
+# @angx/ngx-circle-chart
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.0.
+![Angular Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.png)
 
-## Code scaffolding
+Beautiful Circle Chart for Angular (Now supports Angular 18)!
 
-Run `ng generate component component-name --project ngx-circle-chart` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-circle-chart`.
-> Note: Don't forget to add `--project ngx-circle-chart` or else it will be added to the default project in your `angular.json` file. 
+@angx/ngx-circle-chart has been developed out of [chart.js](https://www.npmjs.com/package/chart.js) and [ng2-charts](https://www.npmjs.com/package/ng2-charts).
 
-## Build
+## Features ##
 
-Run `ng build ngx-circle-chart` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Customization
+- Autoscaling
+- Responsive
+- Easily Customizable Colors
+- Gradient Coloring
+- Supports Angular 18
 
-## Publishing
+## Install ##
 
-After building your library with `ng build ngx-circle-chart`, go to the dist folder `cd dist/ngx-circle-chart` and run `npm publish`.
+To use @angx/ngx-circle-chart in your project install it via [npm](https://www.npmjs.com/package/@angx/ngx-circle-chart):
 
-## Running unit tests
+```
+npm i @angx/ngx-circle-chart --save
+```
 
-Run `ng test ngx-circle-chart` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Usage ##
 
-## Further help
+STRING_INITIALIZER is the action (login, register, enquiryform etc.) that is protected by the captcha service. See [Example](https://github.com/angx-libs/ngx-circle-chart/tree/master/src/app/google-recaptcha-example)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```
+<circle-chart [value]="6" [maxValue]="8" [color]="'#FF4040'" [bgColor]="'#FADADA'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
+```
+
+## Support ##
+
+If you like my work and feel like buying me a coffee, please feel free to do so: 
+
+[Buy Me A Coffee](https://buymeacoffee.com/er.abhishek)
+
+## Credits ##
+
+Abhishek Singh 
+
+[Github](https://github.com/asingh0601)
+[Twitter](https://twitter.com/only_abhishek)
