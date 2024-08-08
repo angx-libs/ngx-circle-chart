@@ -25,8 +25,6 @@ npm i @angx/ngx-circle-chart --save
 
 ## Usage ##
 
-STRING_INITIALIZER is the action (login, register, enquiryform etc.) that is protected by the captcha service. See [Example](https://github.com/angx-libs/ngx-circle-chart/tree/master/src/app/google-recaptcha-example)
-
 ```
 <circle-chart [value]="6" [maxValue]="8" [color]="'#FF4040'" [bgColor]="'#FADADA'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
 ```
