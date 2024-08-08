@@ -1,8 +1,8 @@
 # @angx/ngx-circle-chart
 
-![Angular Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.png)
-
 Beautiful Circle Chart for Angular (Now supports Angular 18)!
+
+![Angular Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.png)
 
 @angx/ngx-circle-chart has been developed out of [chart.js](https://www.npmjs.com/package/chart.js) and [ng2-charts](https://www.npmjs.com/package/ng2-charts).
 
