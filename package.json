@@ -22,11 +22,11 @@
     "ng2-charts": "^6.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "vite": "^5.4.0",
+    "vite": "^5.4.6",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.1.1",
+    "@angular-devkit/build-angular": "^18.1.4",
     "@angular/cli": "^18.1.1",
     "@angular/compiler-cli": "^18.1.0",
     "@types/jasmine": "~5.1.0",
