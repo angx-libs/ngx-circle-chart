@@ -1,6 +1,6 @@
 {
   "name": "@angx/ngx-circle-chart",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Beautiful, auto-scaling circle (doughnut) progress chart for Angular, with optional gradient colouring.",
   "license": "MIT",
   "author": "Abhishek Singh",
