@@ -1,227 +1,238 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
-import { CircleInnerText } from './CircleInnerText';
-import { ChartConfiguration, ChartData } from 'chart.js/auto';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  booleanAttribute,
+  computed,
+  effect,
+  inject,
+  input,
+  numberAttribute,
+  viewChild,
+} from '@angular/core';
+import {
+  ArcElement,
+  Chart,
+  DoughnutController,
+  type ChartConfiguration,
+  type ScriptableContext,
+} from 'chart.js';
+import { createInnerTextPlugin } from './circle-inner-text';
+
+/** Fraction of the host size occupied by the background track. */
+const TRACK_SCALE = 0.96;
 
 @Component({
   selector: 'circle-chart',
-  standalone: true,
-  imports: [CommonModule, BaseChartDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [id]="id" class="chart-wrapper" [style.height.px]="dimensionsInPixels" [style.width.px]="dimensionsInPixels" #chartwrapper>
-    <div>
-    <canvas baseChart class="chart" #chartcanvas id="chart"
-        style="height: {{innerDimensions}}px; max-height: {{innerDimensions}}px; width: {{innerDimensions}}px; max-width: {{innerDimensions}}px;" 
-        [data]="doughnutBgChartData"
-        [type]="chartType" 
-        [options]="doughnutBgChartOptions" [plugins]="plugins">
-</canvas>
-<canvas baseChart class="chart" #chartfgcanvas id="chart-foreground"
-        style="height: {{dimensionsInPixels}}px; max-height: {{dimensionsInPixels}}px; width: {{dimensionsInPixels}}px; max-width: {{dimensionsInPixels}}px;margin-left:{{(dimensionsInPixels*-1/50)}}px;margin-top:{{(dimensionsInPixels*-1/50)}}px;" 
-        [data]="doughnutFgChartData"
-        [type]="chartType" 
-        [options]="doughnutFgChartOptions" [plugins]="plugins">
-</canvas>
+    <div
+      class="circle-chart"
+      [style.width.px]="dimensionsInPixels()"
+      [style.height.px]="dimensionsInPixels()"
+    >
+      <div class="circle-chart__layer circle-chart__layer--track">
+        <canvas #track></canvas>
+      </div>
+      <div class="circle-chart__layer circle-chart__layer--progress">
+        <canvas #progress></canvas>
+      </div>
     </div>
-</div>
   `,
   styles: `
-  #chart,
-  #chart-foreground
-  {
-    position:absolute;
-    pointer-events:none;
-  }`
+    :host {
+      display: inline-block;
+    }
+
+    .circle-chart {
+      position: relative;
+    }
+
+    .circle-chart__layer {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .circle-chart__layer--track {
+      inset: 2%;
+    }
+
+    .circle-chart__layer--progress {
+      inset: 0;
+    }
+
+    .circle-chart__layer canvas {
+      display: block;
+    }
+  `,
 })
+export class NgxCircleChartComponent {
+  private readonly trackCanvas = viewChild.required<ElementRef<HTMLCanvasElement>>('track');
+  private readonly progressCanvas = viewChild.required<ElementRef<HTMLCanvasElement>>('progress');
 
-export class NgxCircleChartComponent implements AfterViewInit {
-  chartType: any = 'doughnut';
-  @ViewChild('chart') chart!: ElementRef;
-  @ViewChild('chartcanvas') chartcanvas!: ElementRef;
-  @ViewChild('chartfgcanvas') chartfgcanvas!: ElementRef;
+  /** Current value. Clamped into `[0, maxValue]` before it is drawn. */
+  readonly value = input.required({ transform: numberAttribute });
 
-  @Input() value!: number;
-  @Input() maxValue!: number;
-  @Input() color!: string;
-  @Input() bgColor!: string;
-  @Input() gradientColoring!: boolean;
-  @Input() dimensionsInPixels: number = 45;
-  id!: string;
-  innerDimensions!: number;
-  plugins: any[];
-  doughnutBgChartLabels: string[] = [];
-  doughnutBgChartOptions!: ChartConfiguration<'doughnut'>['options'];
-  doughnutBgChartData!: ChartData<'doughnut'>;
-  doughnutFgChartLabels: string[] = [];
-  doughnutFgChartOptions!: ChartConfiguration<'doughnut'>['options'];
-  doughnutFgChartData!: ChartData<'doughnut'>;
+  /** Value representing a full circle. */
+  readonly maxValue = input.required({ transform: numberAttribute });
 
-  constructor(private cdr: ChangeDetectorRef) {
-    this.plugins = [{
-      beforeDatasetsDraw: (chartInstance: any) => {
-        chartInstance._metasets.forEach((e: any) => {
-          chartInstance.innerRadius = e.controller.innerRadius;
-        });
-        chartInstance.options.labels = [
-          {
-            text: this.value,
-            font: {
-              size: Math.round(this.innerDimensions * 1.8),
-              units: 'px',
-              family: 'Rubik',
-              weight: '500'
-            },
-            color: this.color
-          },
-          {
-            text: '/' + this.maxValue,
-            font: {
-              size: Math.round(this.innerDimensions * 1.5),
-              units: 'px',
-              family: 'Rubik',
-              weight: '300'
-            },
-            color: this.bgColor
-          }
-        ];
-        this.id = chartInstance.id;
-        new CircleInnerText().drawCircleLabel(chartInstance, chartInstance.options);
+  /** Colour of the progress arc and of the value text. */
+  readonly color = input('#0076ff');
+
+  /** Colour of the background track and, darkened, of the `/maxValue` text. */
+  readonly bgColor = input('#e7e9ed');
+
+  /** Fade the progress arc from `color` towards `bgColor` along its length. */
+  readonly gradientColoring = input(false, { transform: booleanAttribute });
+
+  /** Width and height of the chart, in CSS pixels. */
+  readonly dimensionsInPixels = input(45, { transform: numberAttribute });
+
+  /** Font stack used for the label inside the circle. */
+  readonly fontFamily = input('system-ui, -apple-system, "Segoe UI", Roboto, sans-serif');
+
+  /** `[filled, remaining]`, clamped so a value above `maxValue` cannot wrap. */
+  private readonly segments = computed(() => {
+    const max = Math.max(this.maxValue(), 0);
+    const filled = Math.min(Math.max(this.value(), 0), max);
+    return [filled, max - filled];
+  });
+
+  private trackChart?: Chart<'doughnut'>;
+  private progressChart?: Chart<'doughnut'>;
+
+  constructor() {
+    // Registered here rather than at module scope: the package is marked
+    // `sideEffects: false`, so a top-level call could legitimately be dropped
+    // by a bundler. `Chart.register` de-duplicates, so repeat calls are free.
+    // Registering only the doughnut pieces avoids pulling in every chart.js
+    // controller and scale the way `chart.js/auto` would.
+    Chart.register(DoughnutController, ArcElement);
+
+    // `afterNextRender` only runs in the browser, which keeps the whole
+    // canvas/Chart.js path out of server-side rendering.
+    afterNextRender(() => {
+      this.trackChart = new Chart(this.trackCanvas().nativeElement, this.trackConfig());
+      this.progressChart = new Chart(this.progressCanvas().nativeElement, this.progressConfig());
+    });
+
+    effect(() => {
+      const segments = this.segments();
+      const bgColor = this.bgColor();
+      // Read so the effect re-runs when they change; the values themselves are
+      // pulled from the signals again at draw time.
+      this.color();
+      this.gradientColoring();
+      this.fontFamily();
+
+      if (!this.trackChart || !this.progressChart) {
+        return;
       }
-    }];
+
+      this.trackChart.data.datasets[0].backgroundColor = [bgColor];
+      this.progressChart.data.datasets[0].data = segments;
+      this.trackChart.update('none');
+      this.progressChart.update('none');
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      this.trackChart?.destroy();
+      this.progressChart?.destroy();
+    });
   }
-  ngAfterViewInit() {
-    this.innerDimensions = Math.round(this.dimensionsInPixels * 0.96);
-    this.doughnutBgChartOptions = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          enabled: false
-        }
+
+  private trackConfig(): ChartConfiguration<'doughnut'> {
+    return {
+      type: 'doughnut',
+      data: {
+        // A single segment always fills the ring, whatever `maxValue` is.
+        datasets: [{ data: [1], backgroundColor: [this.bgColor()], borderWidth: 0 }],
       },
-      cutout: '93%',
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        events: [],
+        cutout: '93%',
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      },
     };
-    this.doughnutBgChartData = {
-      datasets: [
-        {
-          data: [this.maxValue],
-          backgroundColor: [this.bgColor],
-        },
+  }
+
+  private progressConfig(): ChartConfiguration<'doughnut'> {
+    return {
+      type: 'doughnut',
+      data: {
+        datasets: [
+          {
+            data: this.segments(),
+            circular: true,
+            borderWidth: 0,
+            // Scriptable so the gradient is rebuilt whenever the canvas is
+            // resized or the chart is redrawn.
+            backgroundColor: (context: ScriptableContext<'doughnut'>) => this.segmentColor(context),
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        events: [],
+        cutout: '85%',
+        circumference: 360,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      },
+      plugins: [
+        createInnerTextPlugin(() => ({
+          value: `${this.value()}`,
+          maxValue: `/${this.maxValue()}`,
+          valueColor: this.color(),
+          maxValueColor: this.bgColor(),
+          fontFamily: this.fontFamily(),
+          baseSize: this.dimensionsInPixels() * TRACK_SCALE,
+        })),
       ],
     };
-    this.doughnutFgChartOptions = {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          enabled: false
-        }
-      },
-      cutout: '85%',
-      circumference: 360
-    };
-    this.doughnutFgChartData = {
-      datasets: [
-        {
-          data: [this.value, this.maxValue - this.value],
-          circular: true,
-          backgroundColor: [this.gradientColoring ? this.getGradient() : this.color, 'transparent']
-        },
-      ],
-    };
-    this.cdr.detectChanges();
   }
-  getGradient() {
-    var nativeElement = this.chartfgcanvas.nativeElement;
-    const percent = this.value / this.maxValue;
-    const ctx = nativeElement.getContext('2d');
-    const offsetWidth = nativeElement.offsetWidth;
-    const offsetHeight = nativeElement.offsetHeight;
-    let coordinates = { x0: 0, y0: 0, x1: 0, y1: 0 };
-    if (percent <= 0.25) {
-      coordinates = {
-        x0: (offsetWidth / 2),
-        y0: 0,
-        x1: (offsetWidth / 2) * (1 + percent / 0.25),
-        y1: (offsetHeight / 4) * (1 + percent / 0.25)
-      };
+
+  private segmentColor(context: ScriptableContext<'doughnut'>): string | CanvasGradient {
+    if (context.dataIndex !== 0) {
+      return 'transparent';
     }
-    else if (percent > 0.25 && percent <= 0.5) {
-      coordinates = {
-        x0: (offsetWidth / 2) * (1 + (percent - 0.25) / 0.25),
-        y0: offsetHeight / 2,
-        x1: offsetWidth,
-        y1: (offsetHeight / 2) * (1 + (percent - 0.25) / 0.25)
-      };
+    if (!this.gradientColoring()) {
+      return this.color();
     }
-    else if (percent > 0.5 && percent <= 0.75) {
-      coordinates = {
-        x0: (offsetWidth / 2) * (1 - (percent - 0.5) / 0.25),
-        y0: (offsetHeight / 4) * (1 + (percent - 0.5) / 0.25),
-        x1: offsetWidth / 2,
-        y1: offsetHeight
-      };
+    return this.buildGradient(context.chart) ?? this.color();
+  }
+
+  /**
+   * Builds a linear gradient whose direction follows the end of the arc, so the
+   * fade always runs along the drawn portion rather than across a fixed axis.
+   */
+  private buildGradient(chart: Chart): CanvasGradient | null {
+    const { ctx, width, height } = chart;
+    if (!ctx || width <= 0 || height <= 0) {
+      return null;
     }
-    else if (percent > 0.75) {
-      coordinates = {
-        x0: 0,
-        y0: (offsetHeight / 4) * (1 - (percent - 0.75) / 0.25),
-        x1: (offsetWidth / 4) * (1 + (percent - 0.75) / 0.25),
-        y1: offsetHeight / 2
-      };
-    }
-    coordinates = {
-      x0: Math.round(coordinates.x0),
-      y0: Math.round(coordinates.y0),
-      x1: Math.round(coordinates.x1),
-      y1: Math.round(coordinates.y1)
-    };
-    let gradient = ctx.createLinearGradient(coordinates.x0, coordinates.y0, coordinates.x1, coordinates.y1);
-    if (percent <= 0.1) {
-      gradient.addColorStop(0, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.1 && percent <= 0.2) {
-      gradient.addColorStop(0.6, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.2 && percent <= 0.3) {
-      gradient.addColorStop(0.6, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.3 && percent <= 0.4) {
-      gradient.addColorStop(0.5, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.4 && percent <= 0.5) {
-      gradient.addColorStop(0.5, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.5 && percent <= 0.6) {
-      gradient.addColorStop(0.8, this.color);
-      gradient.addColorStop(1, this.bgColor);
-    }
-    else if (percent > 0.6 && percent <= 0.7) {
-      gradient.addColorStop(0.9, this.color);
-      gradient.addColorStop(0, this.bgColor);
-    }
-    else if (percent > 0.7 && percent <= 0.8) {
-      gradient.addColorStop(0.9, this.color);
-      gradient.addColorStop(0, this.bgColor);
-    }
-    else if (percent > 0.8 && percent <= 0.9) {
-      gradient.addColorStop(0.9, this.color);
-      gradient.addColorStop(0, this.bgColor);
-    }
-    else if (percent > 0.9 && percent <= 1) {
-      gradient.addColorStop(0.9, this.color);
-      gradient.addColorStop(0, this.bgColor);
-    }
+
+    const max = Math.max(this.maxValue(), 0);
+    const progress = max === 0 ? 0 : Math.min(Math.max(this.value(), 0), max) / max;
+    const angle = 2 * Math.PI * progress - Math.PI / 2;
+    const radius = Math.min(width, height) / 2;
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const gradient = ctx.createLinearGradient(
+      centerX,
+      centerY - radius,
+      centerX + Math.cos(angle) * radius,
+      centerY + Math.sin(angle) * radius,
+    );
+    gradient.addColorStop(0, this.color());
+    gradient.addColorStop(1, this.bgColor());
     return gradient;
   }
 }

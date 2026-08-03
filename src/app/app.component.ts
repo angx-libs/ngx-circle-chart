@@ -1,14 +1,18 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NgxCircleChartComponent } from '../../projects/angx/ngx-circle-chart/src/public-api';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { NgxCircleChartComponent } from '@angx/ngx-circle-chart';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, NgxCircleChartComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgxCircleChartComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'ngx-circle-chart';
+  /** Drives the live chart, to show that the chart tracks input changes. */
+  readonly liveValue = signal(3);
+
+  onLiveValueChange(event: Event): void {
+    this.liveValue.set(Number((event.target as HTMLInputElement).value));
+  }
 }

@@ -1,5 +1,60 @@
-<div style=" display: flex; gap: 30px; justify-content: center;margin-top: 50px">
-  <circle-chart [value]="8" [maxValue]="8" [color]="'#9ECB8E'" [bgColor]="'#ecf4e9'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
-  <circle-chart [value]="6" [maxValue]="8" [color]="'#FF4040'" [bgColor]="'#FADADA'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
-  <circle-chart [value]="7" [maxValue]="8" [color]="'#FFB807'" [bgColor]="'#fff1cf'" [gradientColoring]="true" [dimensionsInPixels]="200"></circle-chart>
-</div>
+<main class="demo">
+  <h1>&#64;angx/ngx-circle-chart</h1>
+
+  <section>
+    <h2>Gradient colouring</h2>
+    <div class="row">
+      <circle-chart
+        [value]="8"
+        [maxValue]="8"
+        color="#9ECB8E"
+        bgColor="#ecf4e9"
+        [gradientColoring]="true"
+        [dimensionsInPixels]="200"
+      />
+      <circle-chart
+        [value]="6"
+        [maxValue]="8"
+        color="#FF4040"
+        bgColor="#FADADA"
+        [gradientColoring]="true"
+        [dimensionsInPixels]="200"
+      />
+      <circle-chart
+        [value]="7"
+        [maxValue]="8"
+        color="#FFB807"
+        bgColor="#fff1cf"
+        [gradientColoring]="true"
+        [dimensionsInPixels]="200"
+      />
+    </div>
+  </section>
+
+  <section>
+    <h2>Flat colouring, mixed sizes</h2>
+    <div class="row">
+      <circle-chart [value]="2" [maxValue]="8" color="#0076ff" bgColor="#e7e9ed" [dimensionsInPixels]="45" />
+      <circle-chart [value]="4" [maxValue]="8" color="#0076ff" bgColor="#e7e9ed" [dimensionsInPixels]="90" />
+      <circle-chart [value]="6" [maxValue]="8" color="#0076ff" bgColor="#e7e9ed" [dimensionsInPixels]="140" />
+    </div>
+  </section>
+
+  <section>
+    <h2>Reactive updates</h2>
+    <div class="row">
+      <circle-chart
+        [value]="liveValue()"
+        [maxValue]="10"
+        color="#7c3aed"
+        bgColor="#ede9fe"
+        [gradientColoring]="true"
+        [dimensionsInPixels]="200"
+      />
+    </div>
+    <label class="slider">
+      Value: {{ liveValue() }}
+      <input type="range" min="0" max="10" [value]="liveValue()" (input)="onLiveValueChange($event)" />
+    </label>
+  </section>
+</main>
