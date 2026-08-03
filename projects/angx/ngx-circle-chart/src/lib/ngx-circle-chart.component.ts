@@ -220,6 +220,14 @@ export class NgxCircleChartComponent {
 
     const max = Math.max(this.maxValue(), 0);
     const progress = max === 0 ? 0 : Math.min(Math.max(this.value(), 0), max) / max;
+
+    // At 100% the arc's end meets its start, so the gradient axis collapses to
+    // a single point and the canvas renders it as a near-empty wash. A full
+    // ring has no direction to fade along, so draw it solid instead.
+    if (progress >= 1) {
+      return null;
+    }
+
     const angle = 2 * Math.PI * progress - Math.PI / 2;
     const radius = Math.min(width, height) / 2;
     const centerX = width / 2;

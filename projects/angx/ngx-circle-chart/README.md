@@ -2,6 +2,8 @@
 
 Beautiful, auto-scaling circle (doughnut) progress chart for Angular.
 
+**[Live demo](https://angx-libs.github.io/ngx-circle-chart/)** · [npm](https://www.npmjs.com/package/@angx/ngx-circle-chart)
+
 ![Angular Circle Chart](https://raw.githubusercontent.com/angx-libs/ngx-circle-chart/master/src/assets/screenshot.png)
 
 Built directly on [chart.js](https://www.npmjs.com/package/chart.js).
@@ -96,6 +98,8 @@ npm run build:lib   # build the package into dist/angx/ngx-circle-chart
 npm start           # build the lib, then serve the demo app
 npm test            # run the library unit tests
 ```
+
+The demo app is deployed to GitHub Pages from `master` by `.github/workflows/deploy-demo.yml`.
 
 ## Support
 
